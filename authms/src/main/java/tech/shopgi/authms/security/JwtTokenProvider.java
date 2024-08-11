@@ -1,61 +1,62 @@
 package tech.shopgi.authms.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import tech.shopgi.authms.model.User;
 
-import javax.crypto.spec.SecretKeySpec;
-import java.security.Key;
-import java.util.Base64;
-import java.util.Date;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 @Component
 public class JwtTokenProvider {
-    private final Key KEY;
-    private final Long JWT_EXPIRATION = 28800000L;  // 8 horas
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String jwtSecret) {
-        byte[] decodedKey = Base64.getDecoder().decode(jwtSecret);
-        this.KEY = new SecretKeySpec(decodedKey, 0, decodedKey.length, SignatureAlgorithm.HS512.getJcaName());
-    }
+    @Value("${jwt.secret}")
+    private String jwtSecretKey;
+    private final Algorithm algorithm = Algorithm.HMAC256(jwtSecretKey);
 
     public String generateToken(User user) {
-        Claims claims = Jwts.claims().setSubject(user.getUsername());
-        claims.put("roles", user.getRole());
-
-        Date now = new Date();
-        Date expirationDate = new Date(now.getTime() + JWT_EXPIRATION);
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(expirationDate)
-                .signWith(KEY, SignatureAlgorithm.HS256)
-                .compact();
+        try {
+            return JWT.create()
+                    .withIssuer("Auth API ShopGi")
+                    .withClaim("roles", user.getRole())
+                    .withSubject(user.getUsername())
+                    .withIssuedAt(Instant.now())
+                    .withExpiresAt(expirationDate())
+                    .sign(algorithm);
+        } catch (JWTCreationException e) {
+            throw new RuntimeException("Error generating JWT token.");
+        }
     }
 
     public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(KEY)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        return claims.getSubject();
+        try {
+            return JWT.require(algorithm)
+                    .withIssuer("Auth API ShopGi")
+                    .build()
+                    .verify(token)
+                    .getSubject();
+        } catch (JWTVerificationException e) {
+            throw new RuntimeException("Invalid or expired JTW token.");
+        }
     }
 
-    public boolean validateToken(String token) {
+    public Boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(KEY)
+            JWT.require(algorithm)
+                    .withIssuer("Auth API ShopGi")
                     .build()
-                    .parseClaimsJws(token);
+                    .verify(token);
             return true;
         } catch (Exception e) {
             return false;
         }
+    }
+
+    private Instant expirationDate() {
+        return Instant.now().plus(8, ChronoUnit.HOURS);
     }
 }
