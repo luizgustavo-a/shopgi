@@ -15,6 +15,7 @@ import tech.shopgi.authms.dto.JwtTokenDataDto;
 import tech.shopgi.authms.dto.LoginRequestDto;
 import tech.shopgi.authms.dto.RegisterRequestDto;
 import tech.shopgi.authms.model.User;
+import tech.shopgi.authms.model.exception.InvalidUserInformationException;
 import tech.shopgi.authms.service.AuthService;
 
 @AllArgsConstructor
@@ -35,7 +36,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<JwtTokenDataDto> register(RegisterRequestDto dto) {
+    public ResponseEntity<JwtTokenDataDto> register(RegisterRequestDto dto) throws InvalidUserInformationException {
         User registeredUser = service.register(dto);
         var token = service.generateToken(registeredUser);
         return ResponseEntity.ok(new JwtTokenDataDto(token));

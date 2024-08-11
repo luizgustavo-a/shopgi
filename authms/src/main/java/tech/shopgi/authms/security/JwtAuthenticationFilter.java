@@ -21,6 +21,7 @@ import java.util.ArrayList;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final CustomUserDetailsService service;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -29,12 +30,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = getJwtFromRequest(request);
 
         if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
-            String username = jwtTokenProvider.getUsernameFromToken(token);
+            var username = jwtTokenProvider.getUsernameFromToken(token);
+            var user = service.loadUserByUsername(username);
 
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     username,
                     null,
-                    new ArrayList<>()
+                    user.getAuthorities()
             );
 
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

@@ -7,12 +7,16 @@ import org.springframework.stereotype.Service;
 import tech.shopgi.authms.dto.LoginRequestDto;
 import tech.shopgi.authms.dto.RegisterRequestDto;
 import tech.shopgi.authms.model.User;
+import tech.shopgi.authms.model.UserRoles;
 import tech.shopgi.authms.model.exception.InvalidUserInformationException;
 import tech.shopgi.authms.repository.UserRepository;
 import tech.shopgi.authms.security.JwtTokenProvider;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BinaryOperator;
 
 @Service
 public class AuthService {
@@ -39,23 +43,22 @@ public class AuthService {
         throw new InvalidUserInformationException("Invalid password");
     }
 
-    public User register(RegisterRequestDto registerRequestDto) {
+    public User register(RegisterRequestDto registerRequestDto) throws InvalidUserInformationException {
         User user = new User();
         user.setUsername(registerRequestDto.username());
         user.setPassword(passwordEncoder.encode(registerRequestDto.password()));
-        user.setRoles(List.of("ROLE_USER"));
+        user.setRoles(new ArrayList<>());
+        user.getRoles().add("ROLE_USER");
 
-        if(!registerRequestDto.roles().isEmpty()) {
-            for(String role: registerRequestDto.roles()) {
-                if (!role.equals("ROLE_USER")) {
+        if (registerRequestDto.roles() != null && !registerRequestDto.roles().isEmpty()) {
+            for (String role : registerRequestDto.roles()) {
+                if (!role.equals("ROLE_USER") && Arrays.stream(UserRoles.values()).anyMatch(r -> r.toString().equalsIgnoreCase(role))) {
                     user.getRoles().add(role);
-                }
+                } else throw new InvalidUserInformationException("Invalid role.");
             }
         }
 
-        userRepository.save(user);
-
-        return user;
+        return userRepository.save(user);
     }
 
     public String generateToken(User user) {
