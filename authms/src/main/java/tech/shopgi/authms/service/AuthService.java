@@ -1,6 +1,7 @@
 package tech.shopgi.authms.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tech.shopgi.authms.dto.LoginRequestDto;
@@ -10,6 +11,7 @@ import tech.shopgi.authms.model.exception.InvalidUserInformationException;
 import tech.shopgi.authms.repository.UserRepository;
 import tech.shopgi.authms.security.JwtTokenProvider;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,19 +26,32 @@ public class AuthService {
     private JwtTokenProvider jwtTokenProvider;
 
     public String authenticate(LoginRequestDto loginRequestDto) throws InvalidUserInformationException {
-        Optional<User> optionalUser = userRepository.findByUsername(loginRequestDto.username());
-        if (optionalUser.isPresent() && passwordEncoder.matches(loginRequestDto.password(), optionalUser.get().getPassword())) {
-            return jwtTokenProvider.generateToken(optionalUser.get());
+        UserDetails userDetails = userRepository.findByUsername(loginRequestDto.username());
+
+        if (userDetails == null) {
+            throw new InvalidUserInformationException("User not found");
         }
-        throw new InvalidUserInformationException();
+
+        if (passwordEncoder.matches(loginRequestDto.password(), userDetails.getPassword())) {
+            return jwtTokenProvider.generateToken((User) userDetails);
+        }
+
+        throw new InvalidUserInformationException("Invalid password");
     }
 
     public void register(RegisterRequestDto registerRequestDto) {
-        User user = new User(
-                registerRequestDto.username(),
-                passwordEncoder.encode(registerRequestDto.password()),
-                "ROLE_USER"
-        );
+        User user = new User();
+        user.setUsername(registerRequestDto.username());
+        user.setPassword(passwordEncoder.encode(registerRequestDto.password()));
+        user.setRoles(List.of("ROLE_USER"));
+
+        if(!registerRequestDto.roles().isEmpty()) {
+            for(String role: registerRequestDto.roles()) {
+                if (!role.equals("ROLE_USER")) {
+                    user.getRoles().add(role);
+                }
+            }
+        }
 
         userRepository.save(user);
     }

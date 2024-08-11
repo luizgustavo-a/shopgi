@@ -2,7 +2,6 @@ package tech.shopgi.authms.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Repository;
 import tech.shopgi.authms.model.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {

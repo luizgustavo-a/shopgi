@@ -9,20 +9,21 @@ import org.springframework.stereotype.Component;
 import tech.shopgi.authms.model.User;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
 @Component
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret}")
+    @Value("${api.jwt.token.secret}")
     private String jwtSecretKey;
-    private final Algorithm algorithm = Algorithm.HMAC256(jwtSecretKey);
 
     public String generateToken(User user) {
         try {
+            Algorithm algorithm = Algorithm.HMAC256(jwtSecretKey);
             return JWT.create()
                     .withIssuer("Auth API ShopGi")
-                    .withClaim("roles", user.getRole())
+                    .withClaim("roles", user.getRoles())
                     .withSubject(user.getUsername())
                     .withIssuedAt(Instant.now())
                     .withExpiresAt(expirationDate())
@@ -34,6 +35,7 @@ public class JwtTokenProvider {
 
     public String getUsernameFromToken(String token) {
         try {
+            Algorithm algorithm = Algorithm.HMAC256(jwtSecretKey);
             return JWT.require(algorithm)
                     .withIssuer("Auth API ShopGi")
                     .build()
@@ -46,6 +48,7 @@ public class JwtTokenProvider {
 
     public Boolean validateToken(String token) {
         try {
+            Algorithm algorithm = Algorithm.HMAC256(jwtSecretKey);
             JWT.require(algorithm)
                     .withIssuer("Auth API ShopGi")
                     .build()
@@ -57,6 +60,6 @@ public class JwtTokenProvider {
     }
 
     private Instant expirationDate() {
-        return Instant.now().plus(8, ChronoUnit.HOURS);
+        return Instant.now().plus(8, ChronoUnit.HOURS).atZone(ZoneId.systemDefault()).toInstant();
     }
 }
