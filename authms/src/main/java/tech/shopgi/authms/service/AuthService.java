@@ -39,7 +39,7 @@ public class AuthService {
         throw new InvalidUserInformationException("Invalid password");
     }
 
-    public void register(RegisterRequestDto registerRequestDto) {
+    public User register(RegisterRequestDto registerRequestDto) {
         User user = new User();
         user.setUsername(registerRequestDto.username());
         user.setPassword(passwordEncoder.encode(registerRequestDto.password()));
@@ -54,6 +54,8 @@ public class AuthService {
         }
 
         userRepository.save(user);
+
+        return user;
     }
 
     public String generateToken(User user) {
@@ -66,5 +68,9 @@ public class AuthService {
 
     public boolean validateToken(String token) {
         return jwtTokenProvider.validateToken(token);
+    }
+
+    public User loadUserByUsername(String username) {
+        return (User) userRepository.findByUsername(username);
     }
 }
