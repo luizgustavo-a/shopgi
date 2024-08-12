@@ -14,9 +14,6 @@ import tech.shopgi.authms.security.JwtTokenProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.BinaryOperator;
 
 @Service
 public class AuthService {
