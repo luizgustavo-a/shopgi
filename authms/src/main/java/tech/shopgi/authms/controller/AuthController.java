@@ -1,5 +1,6 @@
 package tech.shopgi.authms.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<JwtTokenDataDto> register(RegisterRequestDto registerRequestDto) throws InvalidUserInformationException {
+    public ResponseEntity<JwtTokenDataDto> register(@Valid RegisterRequestDto registerRequestDto) throws InvalidUserInformationException {
         User registeredUser = service.register(registerRequestDto);
         var token = service.generateToken(registeredUser);
         return ResponseEntity.ok(new JwtTokenDataDto(token));
@@ -53,7 +54,7 @@ public class AuthController {
 
     @PutMapping("/update")
     public ResponseEntity<?> update(@RequestHeader("Authorization") String token,
-                                    @RequestBody UpdateRequestDto updateRequestDto) throws InvalidUserInformationException {
+                                    @Valid UpdateRequestDto updateRequestDto) throws InvalidUserInformationException {
         String jwtToken = token.substring(7);
         if (service.validateToken(jwtToken)) {
             String username = service.getUsernameFromToken(jwtToken);

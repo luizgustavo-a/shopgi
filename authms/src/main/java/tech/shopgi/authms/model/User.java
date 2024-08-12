@@ -28,11 +28,9 @@ public class User implements UserDetails {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    @Pattern(regexp = "^\\S{4,20}$", message = "Username must be 4 to 20 characters long, with no spaces.")
     private String username;
 
     @Column(nullable = false)
-    @Pattern(regexp = "^.{4,}$", message = "Password must be at least 4 characters long.")
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
