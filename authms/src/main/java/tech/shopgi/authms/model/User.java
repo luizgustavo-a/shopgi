@@ -35,7 +35,8 @@ public class User implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role", nullable = false)
-    private List<String> roles;
+    @Enumerated(EnumType.STRING)
+    private List<UserRoles> roles;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -45,7 +46,7 @@ public class User implements UserDetails {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
-    public User(String username, String password, List<String>  roles) {
+    public User(String username, String password, List<UserRoles>  roles) {
         this.username = username;
         this.password = password;
         this.roles = roles;
@@ -54,6 +55,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
+                .map(Enum::toString)
                 .map(SimpleGrantedAuthority::new)
                 .toList();
     }
