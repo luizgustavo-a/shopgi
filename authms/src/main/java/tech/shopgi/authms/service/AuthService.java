@@ -1,12 +1,10 @@
 package tech.shopgi.authms.service;
 
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import tech.shopgi.authms.dto.UpdateRequestDto;
-import tech.shopgi.authms.dto.LoginRequestDto;
 import tech.shopgi.authms.dto.RegisterRequestDto;
+import tech.shopgi.authms.dto.UpdateRequestDto;
 import tech.shopgi.authms.model.User;
 import tech.shopgi.authms.model.UserRoles;
 import tech.shopgi.authms.model.exception.InvalidUserInformationException;

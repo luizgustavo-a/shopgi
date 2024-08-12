@@ -1,6 +1,7 @@
 package tech.shopgi.authms.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,16 +28,17 @@ public class User implements UserDetails {
     private Long id;
 
     @Column(nullable = false, unique = true)
+    @Pattern(regexp = "^\\S{4,20}$", message = "Username must be 4 to 20 characters long, with no spaces.")
     private String username;
 
     @Column(nullable = false)
+    @Pattern(regexp = "^.{4,}$", message = "Password must be at least 4 characters long.")
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private List<UserRoles> roles;
+    private List<String> roles;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -46,7 +48,7 @@ public class User implements UserDetails {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
-    public User(String username, String password, List<UserRoles>  roles) {
+    public User(String username, String password, List<String>  roles) {
         this.username = username;
         this.password = password;
         this.roles = roles;
@@ -55,7 +57,6 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(Enum::toString)
                 .map(SimpleGrantedAuthority::new)
                 .toList();
     }
