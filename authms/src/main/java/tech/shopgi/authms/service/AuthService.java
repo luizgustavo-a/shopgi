@@ -63,7 +63,7 @@ public class AuthService {
             user.setUsername(updateRequestDto.newUsername());
         }
         if(updateRequestDto.newPassword() != null && !updateRequestDto.newPassword().isEmpty()) {
-            user.setUsername(passwordEncoder.encode(updateRequestDto.newPassword()));
+            user.setPassword(passwordEncoder.encode(updateRequestDto.newPassword()));
         }
 
         return userRepository.save(user);
