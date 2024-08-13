@@ -20,16 +20,11 @@ import tech.shopgi.authms.service.AuthService;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final AuthenticationManager manager;
     private final AuthService service;
 
     @PostMapping("/login")
     public ResponseEntity<JwtTokenDataDto> login(LoginRequestDto loginRequestDto) {
-        var usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(loginRequestDto.username(), loginRequestDto.password());
-        var authentication = manager.authenticate(usernamePasswordAuthenticationToken);
-        var token = service.generateToken((User) authentication.getPrincipal());
-
-        return ResponseEntity.ok(new JwtTokenDataDto(token));
+        return ResponseEntity.ok(new JwtTokenDataDto(service.login(loginRequestDto)));
     }
 
     @PostMapping("/register")
@@ -40,7 +35,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> refresh(@RequestHeader("Authorization") String token) throws InvalidUserInformationException {
         String jwtToken = token.substring(7);
         if (service.validateToken(jwtToken)) {
             String username = service.getUsernameFromToken(jwtToken);

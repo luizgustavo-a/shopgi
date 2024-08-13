@@ -1,8 +1,12 @@
 package tech.shopgi.authms.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import tech.shopgi.authms.dto.LoginRequestDto;
 import tech.shopgi.authms.dto.RegisterRequestDto;
 import tech.shopgi.authms.dto.UpdateRequestDto;
 import tech.shopgi.authms.model.User;
@@ -21,6 +25,13 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationManager manager;
+
+    public String login(LoginRequestDto loginRequestDto) throws AuthenticationException {
+        var usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(loginRequestDto.username(), loginRequestDto.password());
+        var authentication = manager.authenticate(usernamePasswordAuthenticationToken);
+        return generateToken((User) authentication.getPrincipal());
+    }
 
     public User register(RegisterRequestDto registerRequestDto) throws InvalidUserInformationException {
         User user = new User();
@@ -31,9 +42,11 @@ public class AuthService {
 
         if (registerRequestDto.roles() != null && !registerRequestDto.roles().isEmpty()) {
             for (String role : registerRequestDto.roles()) {
-                if (!role.equals("ROLE_USER") && Arrays.stream(UserRoles.values()).anyMatch(r -> r.toString().equalsIgnoreCase(role))) {
-                    user.getRoles().add(role);
-                } else throw new InvalidUserInformationException("Invalid role.");
+                if (!role.equals("ROLE_USER")){
+                    if (Arrays.stream(UserRoles.values()).anyMatch(r -> r.toString().equalsIgnoreCase(role))) {
+                        user.getRoles().add(role);
+                    } else throw new InvalidUserInformationException("Invalid role.");
+                }
             }
         }
 
@@ -52,11 +65,14 @@ public class AuthService {
         return jwtTokenProvider.validateToken(token);
     }
 
-    public User loadUserByUsername(String username) {
-        return (User) userRepository.findByUsername(username);
+    public User loadUserByUsername(String username) throws InvalidUserInformationException {
+        var user = (User) userRepository.findByUsername(username);
+        if(user != null) {
+            return user;
+        } else throw new InvalidUserInformationException("Username not found.");
     }
 
-    public User update(UpdateRequestDto updateRequestDto, String username) {
+    public User update(UpdateRequestDto updateRequestDto, String username) throws InvalidUserInformationException {
         User user = loadUserByUsername(username);
 
         if(updateRequestDto.newUsername() != null && !updateRequestDto.newUsername().isEmpty()) {
