@@ -2,7 +2,7 @@ package tech.shopgi.customerms.dto;
 
 import jakarta.validation.constraints.Pattern;
 
-public record UpdateCostumerDto(
+public record UpdateCustomerDto(
         Long id,
         String name,
         @Pattern(regexp = "^\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2}$")
