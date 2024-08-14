@@ -3,6 +3,7 @@ package tech.shopgi.customerms.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 import tech.shopgi.customerms.dto.CreateCustomerDto;
 import tech.shopgi.customerms.dto.PublicCustomerDto;
@@ -44,7 +45,7 @@ public class CustomerController {
             Long id = Long.parseLong(identifier);
             var customer = customerService.findCustomerById(id);
             return ResponseEntity.ok(new PublicCustomerDto(customer));
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             // if the identifier is not the id, it is the document
         }
         var customer = customerService.findCustomerByDocument(identifier);
