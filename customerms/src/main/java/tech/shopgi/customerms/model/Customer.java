@@ -38,4 +38,14 @@ public class Customer {
     private String email;
 
     private String contactNumber;
+
+    public Customer(String name, String document, String dateOfBirth, Gender gender, Address address, String email, String contactNumber) {
+        this.name = name;
+        this.document = document;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
+        this.address = address;
+        this.email = email;
+        this.contactNumber = contactNumber;
+    }
 }
