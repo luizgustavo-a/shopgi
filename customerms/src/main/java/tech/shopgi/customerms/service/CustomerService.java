@@ -3,7 +3,7 @@ package tech.shopgi.customerms.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import tech.shopgi.customerms.dto.CreateCustomerDto;
-import tech.shopgi.customerms.dto.UpdateCostumerDto;
+import tech.shopgi.customerms.dto.UpdateCustomerDto;
 import tech.shopgi.customerms.model.Address;
 import tech.shopgi.customerms.model.Customer;
 import tech.shopgi.customerms.model.Gender;
@@ -11,7 +11,6 @@ import tech.shopgi.customerms.model.exception.CostumerNotFoundException;
 import tech.shopgi.customerms.repository.CustomerRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -56,45 +55,45 @@ public class CustomerService {
                 .orElseThrow(CostumerNotFoundException::new);
     }
 
-    public Customer update(UpdateCostumerDto updateCostumerDto) throws CostumerNotFoundException {
-        Customer customer = findCustomerById(updateCostumerDto.id());
+    public Customer update(UpdateCustomerDto updateCustomerDto) throws CostumerNotFoundException {
+        Customer customer = findCustomerById(updateCustomerDto.id());
 
-        if (updateCostumerDto.name()!= null && !updateCostumerDto.name().isEmpty()) {
-            customer.setName(updateCostumerDto.name());
+        if (updateCustomerDto.name()!= null && !updateCustomerDto.name().isEmpty()) {
+            customer.setName(updateCustomerDto.name());
         }
-        if (updateCostumerDto.document()!= null && !updateCostumerDto.document().isEmpty()) {
-            customer.setDocument(updateCostumerDto.document());
+        if (updateCustomerDto.document()!= null && !updateCustomerDto.document().isEmpty()) {
+            customer.setDocument(updateCustomerDto.document());
         }
-        if (updateCostumerDto.dateOfBirth()!= null && !updateCostumerDto.dateOfBirth().isEmpty()) {
-            customer.setDateOfBirth(updateCostumerDto.dateOfBirth());
+        if (updateCustomerDto.dateOfBirth()!= null && !updateCustomerDto.dateOfBirth().isEmpty()) {
+            customer.setDateOfBirth(updateCustomerDto.dateOfBirth());
         }
-        if (updateCostumerDto.gender()!= null && !updateCostumerDto.gender().isEmpty()) {
-            customer.setGender(Gender.fromString(updateCostumerDto.gender()));
+        if (updateCustomerDto.gender()!= null && !updateCustomerDto.gender().isEmpty()) {
+            customer.setGender(Gender.fromString(updateCustomerDto.gender()));
         }
-        if (updateCostumerDto.email()!= null && !updateCostumerDto.email().isEmpty()) {
-            customer.setEmail(updateCostumerDto.email());
+        if (updateCustomerDto.email()!= null && !updateCustomerDto.email().isEmpty()) {
+            customer.setEmail(updateCustomerDto.email());
         }
-        if (updateCostumerDto.contactNumber()!= null && !updateCostumerDto.contactNumber().isEmpty()) {
-            customer.setContactNumber(updateCostumerDto.contactNumber());
+        if (updateCustomerDto.contactNumber()!= null && !updateCustomerDto.contactNumber().isEmpty()) {
+            customer.setContactNumber(updateCustomerDto.contactNumber());
         }
-        if (updateCostumerDto.address()!= null) {
-            if (updateCostumerDto.address().street()!= null && !updateCostumerDto.address().street().isEmpty()) {
-                customer.getAddress().setStreet(updateCostumerDto.address().street());
+        if (updateCustomerDto.address()!= null) {
+            if (updateCustomerDto.address().street()!= null && !updateCustomerDto.address().street().isEmpty()) {
+                customer.getAddress().setStreet(updateCustomerDto.address().street());
             }
-            if (updateCostumerDto.address().number()!= null && !updateCostumerDto.address().number().isEmpty()) {
-                customer.getAddress().setNumber(updateCostumerDto.address().number());
+            if (updateCustomerDto.address().number()!= null && !updateCustomerDto.address().number().isEmpty()) {
+                customer.getAddress().setNumber(updateCustomerDto.address().number());
             }
-            if (updateCostumerDto.address().complement()!= null && !updateCostumerDto.address().complement().isEmpty()) {
-                customer.getAddress().setComplement(updateCostumerDto.address().complement());
+            if (updateCustomerDto.address().complement()!= null && !updateCustomerDto.address().complement().isEmpty()) {
+                customer.getAddress().setComplement(updateCustomerDto.address().complement());
             }
-            if (updateCostumerDto.address().city()!= null && !updateCostumerDto.address().city().isEmpty()) {
-                customer.getAddress().setCity(updateCostumerDto.address().city());
+            if (updateCustomerDto.address().city()!= null && !updateCustomerDto.address().city().isEmpty()) {
+                customer.getAddress().setCity(updateCustomerDto.address().city());
             }
-            if (updateCostumerDto.address().state()!= null && !updateCostumerDto.address().state().isEmpty()) {
-                customer.getAddress().setState(updateCostumerDto.address().state());
+            if (updateCustomerDto.address().state()!= null && !updateCustomerDto.address().state().isEmpty()) {
+                customer.getAddress().setState(updateCustomerDto.address().state());
             }
-            if (updateCostumerDto.address().postalCode()!= null && !updateCostumerDto.address().postalCode().isEmpty()) {
-                customer.getAddress().setPostalCode(updateCostumerDto.address().postalCode());
+            if (updateCustomerDto.address().postalCode()!= null && !updateCustomerDto.address().postalCode().isEmpty()) {
+                customer.getAddress().setPostalCode(updateCustomerDto.address().postalCode());
             }
         }
 
