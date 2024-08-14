@@ -25,7 +25,7 @@ public class SecurityConfig  {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
                     req.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/actuator/**").permitAll();
-                    req.requestMatchers(HttpMethod.POST,"/costumer").hasRole("ADMIN");
+                    req.requestMatchers(HttpMethod.DELETE).hasRole("ADMIN");
                     req.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

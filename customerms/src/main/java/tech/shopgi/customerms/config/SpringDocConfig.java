@@ -25,10 +25,10 @@ public class SpringDocConfig {
                                 .name("Authorization")))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .info(new Info()
-                        .title("Authorization microservice for ShopGi")
-                        .description("The AuthService microservice is responsible for user authentication and authorization," +
-                                " generating and validating JWT tokens, and providing token refresh capabilities to " +
-                                "secure access across the entire application.")
+                        .title("Customer microservice for ShopGi")
+                        .description("The Customer microservice is responsible for managing customer information within " +
+                                "the application. It handles the creation, retrieval, updating, and deletion of customer " +
+                                "records.")
                         .contact(new Contact().email("luizalmeida.ads@gmail.com").url("https://github.com/luizgustavo-a"))
                         .license(new License().name("Apache 2.0").identifier("Apache-2.0"))
                 );
